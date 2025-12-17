@@ -182,7 +182,7 @@ test.describe('addtocart',()=>{
      await page.click('#cart > ul > li:nth-child(2) > div > p > a:nth-child(1) > strong');
 
     })
-    test.only('Verify behavior when adding an out-of-stock product to the cart',async({page})=>{
+    test('Verify behavior when adding an out-of-stock product to the cart',async({page})=>{
         await page.goto('https://tutorialsninja.com/demo/index.php?route=product/product&product_id=30');
         const addtocart = await page.locator('//*[@id="button-cart"]');
         addtocart.click();
@@ -194,6 +194,48 @@ test.describe('addtocart',()=>{
         }
      
     })
+    test('Verify cart is empty after successful order placement', async({page})=>{
+        await page.goto('https://tutorialsninja.com/demo/index.php?route=checkout/cart');
+        await page.click('#content > div.row > div:nth-child(1) > div > div.button-group > button:nth-child(1) > span')
+        await page.click('#cart > button');
+        await page.click('//*[@id="cart"]/ul/li[2]/div/p/a[1]/strong');
+        const cartItems = await page.$$('table.table tbody tr');
+        expect(cartItems.length).toBeGreaterThan(0);
+        await page.click('//*[@id="content"]/div[3]/div[2]/a');
+
+    })
+    test.only('Verify cart is empty after removing all items', async ({ page }) => {
+  // Start from home page
+  await page.goto('https://tutorialsninja.com/demo/index.php?route=common/home');
+
+  // Add product (MacBook)
+  await page.click('text=MacBook');
+  await page.click('#button-cart');
+
+  // Go to cart
+  await page.click('a[title="Shopping Cart"]');
+
+  
+
+  // Remove items
+  let removeButtons = await page.locator('button.btn-danger');
+while (removeButtons.length > 0) {
+  await removeButtons[0].click();
+  await page.waitForTimeout(1000);
+  removeButtons = await page.$$('button.btn-danger'); // refresh list
+}
+
+
+  // Verify empty cart message
+  const emptyCartMessage = await page.locator('#content p');
+  await expect(emptyCartMessage).toContainText('Your shopping cart is empty!');
+});
+test('Verify Proceed button works correctly', async({page})=>{
+    await page.locator('https://tutorialsninja.com/demo/index.php?route=common/home')
+    await page.locator('//*[@id="content"]/div[2]/div[1]/div/div[2]/h4/a').click();
+    await page.click('//*[@id="button-cart"]');
+    
+})
 })
 
 

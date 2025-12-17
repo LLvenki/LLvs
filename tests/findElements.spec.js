@@ -56,5 +56,5 @@ test('radi', async({page})=>{
 })
 test('radio', async({page})=>{
         await page.goto("https://tutorialsninja.com/demo/index.php?route=account/register")
-
+        
 })
